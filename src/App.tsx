@@ -6,13 +6,13 @@ const formFields = [
   { id: 2, label: "Last Name", type: "text" },
   { id: 3, label: "Email", type: "email" },
   { id: 4, label: "Date of Birth", type: "date" },
-  { id: 5, label: "Phone Number", type: "number" },
+  { id: 5, label: "Phone Number", type: "tel" },
 ];
 
 function App() {
   return (
     <AppContainer>
-      <div className="p-4 mx-auto bg-white shadow-lg rounded-xl">
+      <div className="p-4 mx-auto bg-slate-700 shadow-slate-300/30 shadow-lg text-white rounded-xl">
         <Header
           title={`welcome to Lesson 5 of $react-typescript with #tailwindcss`}
         />
@@ -25,7 +25,7 @@ function App() {
             />
           </div>
         ))}
-        <button className="bg-blue-500 text-white px-5 py-2 rounded-xl mt-2 font-semibold">
+        <button className="bg-amber-500 shadow-amber-500/40 mt-4 shadow-lg  text-white px-5 py-2 rounded-xl font-semibold">
           Submit
         </button>
       </div>
