@@ -20,7 +20,7 @@ function App() {
           <div key={field.id}>
             <label>{field.label}</label>
             <input
-              className="border-2 border-gray-200 rounded-lg p-2 m-2 w-full"
+              className="border-2 text-black border-gray-200 rounded-lg p-2 m-2 w-full"
               type={field.type}
             />
           </div>
