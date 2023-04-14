@@ -3,6 +3,12 @@ import Header from "./Header";
 import { useState } from "react";
 import Home from "./components/Home";
 import Form from "./components/Form";
+import { formData } from "./components/Form";
+
+export const getLocalForms: () => formData[] = () => {
+  const savedFormsJSON = localStorage.getItem("savedForms");
+  return savedFormsJSON ? JSON.parse(savedFormsJSON) : [];
+};
 
 function App() {
   const [state, setState] = useState("HOME");
