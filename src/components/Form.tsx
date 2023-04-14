@@ -17,14 +17,30 @@ interface formField {
 }
 
 const formFields: formField[] = [
-  { id: 1, label: "First Name", type: "text", value: "" },
-  { id: 2, label: "Last Name", type: "text", value: "" },
-  { id: 3, label: "Email", type: "email", value: "" },
-  { id: 4, label: "Date of Birth", type: "date", value: "" },
-  { id: 5, label: "Phone Number", type: "tel", value: "" },
+  {
+    id: Math.random() * 10000000,
+    label: "First Name",
+    type: "text",
+    value: "",
+  },
+  { id: Math.random() * 10000000, label: "Last Name", type: "text", value: "" },
+  { id: Math.random() * 10000000, label: "Email", type: "email", value: "" },
+  {
+    id: Math.random() * 10000000,
+    label: "Date of Birth",
+    type: "date",
+    value: "",
+  },
+  {
+    id: Math.random() * 10000000,
+    label: "Phone Number",
+    type: "tel",
+    value: "",
+  },
 ];
 
 export default function Form(props: { closeFormCB: () => void }) {
+  //Use effects
   useEffect(() => {
     console.log("Mounting the component");
     const oldTitle = document.title;
@@ -35,6 +51,7 @@ export default function Form(props: { closeFormCB: () => void }) {
     };
   }, []);
 
+  //Function declarations
   const saveLocalForms = (localForms: formData[]) => {
     localStorage.setItem("savedForms", JSON.stringify(localForms));
   };
@@ -52,8 +69,10 @@ export default function Form(props: { closeFormCB: () => void }) {
     if (localForms.length > 0) {
       return localForms;
     }
+
+    //dummy form to prevent null.
     const newForm = {
-      id: Number(new Date()),
+      id: -1,
       title: "Untitled Form",
       formFields: formFields,
     };
@@ -89,10 +108,14 @@ export default function Form(props: { closeFormCB: () => void }) {
     });
   };
 
-  const [state, setState] = useState(() => initialState()[0]);
-  const [displayAllForms, setDisplay] = useState(true);
-  const [newField, setNewField] = useState("");
-  const titleRef = useRef<HTMLInputElement>(null);
+  // After choosing a particular form from the list, its content would be loaded here.
+  const getFormData = (id: number) => {
+    const allForms = getLocalForms();
+    const formData = allForms.find((ele) => ele.id === id);
+    if (formData) {
+      setState(formData);
+    }
+  };
 
   const addField = () => {
     setState({
@@ -118,21 +141,12 @@ export default function Form(props: { closeFormCB: () => void }) {
   };
 
   const saveForm = () => {
-    console.log("state1", state);
-    console.log("date and time", Number(new Date()));
-
-    //Not Working. Reason unknown. Workaround: created a duplicate object and used setState on it.
-    // setState((state) => ({
-    //   ...state,
-    //   id: Number(new Date()),
-    //   title: "update hack",
-    // }));
-
+    //Updating the ID
     let curState = state;
     curState.id = Number(new Date());
     setState(curState);
 
-    console.log("state2", state);
+    //setting display and state
     const prev_data = getLocalForms();
     saveLocalForms([...prev_data, state]);
     console.log(getLocalForms());
@@ -140,9 +154,30 @@ export default function Form(props: { closeFormCB: () => void }) {
     setState(initialState()[0]);
   };
 
+  const toggleDisplay = () => {
+    setDisplay((prevState) => !prevState);
+    setState({
+      id: Number(new Date()),
+      title: "Untitled Form",
+      formFields: formFields,
+    });
+  };
+
+  //State variables
+
+  //Contains the current form data
+  const [state, setState] = useState(() => initialState()[0]);
+
+  //Display either the form or the list
+  const [displayAllForms, setDisplay] = useState(true);
+
+  //Data corresponding to the fields
+  const [newField, setNewField] = useState("");
+  const titleRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     let timeout = setTimeout(() => {
-      // saveData(state);
+      saveData(state);
       console.log("Data saved to local storage");
     }, 1000);
 
@@ -151,10 +186,6 @@ export default function Form(props: { closeFormCB: () => void }) {
     };
   }, [state]);
 
-  const toggleDisplay = () => {
-    setDisplay((prevState) => !prevState);
-  };
-
   return (
     <>
       {displayAllForms ? (
@@ -162,6 +193,7 @@ export default function Form(props: { closeFormCB: () => void }) {
           getLocalFormCB={getLocalForms}
           toggleDisplayCB={toggleDisplay}
           saveFormCB={saveForm}
+          getFormDataCB={getFormData}
         />
       ) : (
         <div className="flex flex-col gap-2 p-4 divide-y divide-slate-500 divide-dotted">

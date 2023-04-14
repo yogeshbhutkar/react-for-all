@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { formData } from "./Form";
-import { getLocalForms } from "../App";
 
 export default function AllForms(props: {
   getLocalFormCB: () => formData[];
   saveFormCB: () => void;
   toggleDisplayCB: () => void;
+  getFormDataCB: (id: number) => void;
 }) {
   const deleteForm = (id: number) => {
     const removedArray = props
@@ -15,18 +15,26 @@ export default function AllForms(props: {
     setAllForms(removedArray);
   };
 
+  const openForm = (id: number) => {
+    props.toggleDisplayCB()
+    props.getFormDataCB(id)
+    console.log(id)
+  }
+
   const [allForms, setAllForms] = useState(props.getLocalFormCB());
 
   return (
     <div className="px-5">
-      {allForms.map((ele, index) => (
+      {allForms.filter((ele)=>ele.id!==-1).map((ele, index) => (
         <div
           className="text-white py-3 px-5 my-3 rounded-lg hover:bg-[#5d7691] bg-[#485d74] flex justify-between"
           key={index}
         >
           <div className="">{ele.title}</div>
           <div>
-            <button className="inline px-3 text-amber-300 hover:text-amber-400">
+            <button
+                onClick={(_)=>openForm(ele.id)} 
+                className="inline px-3 text-amber-300 hover:text-amber-400">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
