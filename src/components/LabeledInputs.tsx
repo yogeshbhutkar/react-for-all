@@ -11,7 +11,7 @@ export default function LabeledInputs(props: {
       <label>{props.label}</label>
       <div className="flex">
         <input
-          className="border-2 flex-1 text-black border-gray-200 rounded-lg p-2 m-2 w-full"
+          className="border-1 focus:outline-none text-white border-slate-600 w-full bg-[#485d74] rounded-lg p-2 my-2 flex-1"
           type={props.type}
           value={props.value}
           onChange={(e) => props.updateFormCB(props.id, e.target.value)}
