@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import LabeledInputs from "./LabeledInputs";
 import { getLocalForms } from "../App";
 import { saveLocalForms } from "../App";
-import { Link, navigate } from "raviger";
+import { navigate } from "raviger";
 
 export interface formData {
   id: number;
@@ -10,7 +10,7 @@ export interface formData {
   formFields: formField[];
 }
 
-interface formField {
+export interface formField {
   id: number;
   label: string;
   type: string;
@@ -91,17 +91,17 @@ export default function Form(props: { formId: number }) {
     return getLocalForms();
   };
 
-  const clearForm = () => {
-    setState({
-      ...state,
-      formFields: state.formFields.map((ele) => {
-        return {
-          ...ele,
-          value: "",
-        };
-      }),
-    });
-  };
+  // const clearForm = () => {
+  //   setState({
+  //     ...state,
+  //     formFields: state.formFields.map((ele) => {
+  //       return {
+  //         ...ele,
+  //         value: "",
+  //       };
+  //     }),
+  //   });
+  // };
 
   const updateForm = (id: number, str: string) => {
     setState({
@@ -110,7 +110,7 @@ export default function Form(props: { formId: number }) {
         if (ele.id === id) {
           return {
             ...ele,
-            value: str,
+            label: str,
           };
         } else {
           return ele;
@@ -127,7 +127,7 @@ export default function Form(props: { formId: number }) {
         {
           id: Number(new Date()),
           label: newField,
-          type: "text",
+          type: type,
           value: "",
         },
       ],
@@ -164,6 +164,11 @@ export default function Form(props: { formId: number }) {
   //Data corresponding to the fields
   const [newField, setNewField] = useState("");
   const titleRef = useRef<HTMLInputElement>(null);
+  const [type, setType] = useState("text");
+
+  useEffect(() => {
+    state.id !== props.formId && navigate(`/forms/${state.id}`);
+  }, [state.id, props.formId]);
 
   useEffect(() => {
     let timeout = setTimeout(() => {
@@ -175,6 +180,10 @@ export default function Form(props: { formId: number }) {
       clearTimeout(timeout);
     };
   }, [state]);
+
+  useEffect(() => {
+    console.log(type);
+  }, [type]);
 
   return (
     <div className="flex flex-col gap-2 p-4 divide-y divide-slate-500 divide-dotted">
@@ -207,6 +216,42 @@ export default function Form(props: { formId: number }) {
           value={newField}
           onChange={(e) => setNewField(e.target.value)}
         />
+        <select
+          onChange={(e) => {
+            setType(e.target.value);
+          }}
+          name="type"
+          id="type"
+          className="px-3 bg-amber-500 hover:bg-amber-600 shadow-amber-500/40 my-2 shadow-lg  text-white py-2 rounded-xl font-semibold"
+        >
+          <option
+            value="text"
+            className="bg-slate-500 text-white font-semibold"
+          >
+            text
+          </option>
+          <option value="tel" className="bg-slate-500 text-white font-semibold">
+            tel
+          </option>
+          <option
+            value="email"
+            className="bg-slate-500 text-white font-semibold"
+          >
+            email
+          </option>
+          <option
+            value="number"
+            className="bg-slate-500 text-white font-semibold"
+          >
+            number
+          </option>
+          <option
+            value="date"
+            className="bg-slate-500 text-white font-semibold"
+          >
+            date
+          </option>
+        </select>
         <button
           onClick={addField}
           className="px-5 bg-amber-500 hover:bg-amber-600 shadow-amber-500/40 my-2 shadow-lg  text-white py-2 rounded-xl font-semibold"
@@ -215,29 +260,18 @@ export default function Form(props: { formId: number }) {
         </button>
       </div>
       <div className="flex gap-4">
-        <button
+        {/* <button
           onClick={(_) => saveData(state)}
           className="bg-amber-500 hover:bg-amber-600 shadow-amber-500/40 mt-4 shadow-lg  text-white px-5 py-2 rounded-xl font-semibold"
         >
           Save
-        </button>
+        </button> */}
+
         <button
           onClick={saveForm}
-          className="bg-amber-500 hover:bg-amber-600 shadow-amber-500/40 mt-4 shadow-lg  text-white px-5 py-2 rounded-xl font-semibold"
+          className="bg-amber-500 w-full hover:bg-amber-600 shadow-amber-500/40 mt-4 shadow-lg  text-white px-5 py-2 rounded-xl font-semibold"
         >
           Add Form
-        </button>
-        <Link
-          href="/"
-          className="px-5 bg-amber-500 hover:bg-amber-600 shadow-amber-500/40 mt-4 shadow-lg  text-white py-2 rounded-xl font-semibold"
-        >
-          Close Form
-        </Link>
-        <button
-          onClick={clearForm}
-          className="px-5 bg-amber-500 hover:bg-amber-600 shadow-amber-500/40 mt-4 shadow-lg  text-white py-2 rounded-xl font-semibold"
-        >
-          Clear Form
         </button>
       </div>
     </div>
