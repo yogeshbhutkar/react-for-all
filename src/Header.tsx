@@ -18,7 +18,7 @@ export default function Header() {
           <ActiveLink
             key={link.url}
             href={link.url}
-            className="text-white font-semibold p-2 m-2 uppercase"
+            className=" font-semibold p-2 m-2 uppercase"
             exactActiveClass="text-amber-400"
           >
             {link.page}
