@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { getLocalForms } from "../App";
-import { formField } from "./Form";
+import { DropdownField, formField, textFieldTypes } from "../types/formTypes";
 import QuestionCard from "./QuestionCard";
 import { navigate } from "raviger";
+import LabeledRadio from "./LabeledRadio";
 
 export default function Preview(props: { previewId: Number }) {
   const getAllQuestions: () => formField[] = useCallback(() => {
@@ -48,10 +49,10 @@ export default function Preview(props: { previewId: Number }) {
 
   useEffect(() => {
     setCurrentQuestion(getQuestion(index));
-    // console.log("currentquestion" + currentQuestion.label);
   }, [index, getQuestion]);
 
   useEffect(() => {
+    console.log(getAllQuestions());
     console.log(answers);
   }, [answers]);
 
@@ -75,12 +76,69 @@ export default function Preview(props: { previewId: Number }) {
             </div>
           ) : (
             <div>
-              <QuestionCard
-                label={currentQuestion.label}
-                type={currentQuestion.type}
-                addAnswerCB={addAnswer}
-                updateIndexCB={updateIndex}
-              />
+              {(() => {
+                if (currentQuestion.kind === "text")
+                  return (
+                    <div>
+                      <QuestionCard
+                        label={currentQuestion.label}
+                        type={currentQuestion.type}
+                        addAnswerCB={addAnswer}
+                        updateIndexCB={updateIndex}
+                      />
+                    </div>
+                  );
+                else if (currentQuestion.kind === "radio") {
+                  return (
+                    <QuestionCard
+                      label={currentQuestion.label}
+                      type="radio"
+                      options={currentQuestion.options}
+                      addAnswerCB={addAnswer}
+                      updateIndexCB={updateIndex}
+                    />
+                  );
+                } else if (currentQuestion.kind === "dropdown") {
+                  return (
+                    <select
+                      className="px-3 bg-amber-500 hover:bg-amber-600 shadow-amber-500/40 my-2 shadow-lg  text-white py-2 rounded-xl font-semibold"
+                      value={currentQuestion.label}
+                      onChange={(e) => {
+                        addAnswer(e.target.value);
+                        updateIndex();
+                        console.log(answers);
+                      }}
+                    >
+                      <option
+                        className="bg-slate-500 text-white font-semibold"
+                        value=""
+                      >
+                        Select an option
+                      </option>
+                      {(currentQuestion as DropdownField).options.map(
+                        (option, index) => (
+                          <option
+                            className="bg-slate-500 text-white font-semibold"
+                            key={index}
+                            value={option}
+                          >
+                            {option}
+                          </option>
+                        )
+                      )}
+                    </select>
+                  );
+                } else if (currentQuestion.kind === "textarea") {
+                  return (
+                    <QuestionCard
+                      label={currentQuestion.label}
+                      type="textarea"
+                      addAnswerCB={addAnswer}
+                      updateIndexCB={updateIndex}
+                    />
+                  );
+                }
+              })()}
             </div>
           )}
         </div>

@@ -1,4 +1,4 @@
-import { formData } from "./components/Form";
+import { formData } from "./types/formTypes";
 import AppRouter from "./router/AppRouter";
 
 export const saveLocalForms = (localForms: formData[]) => {

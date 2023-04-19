@@ -3,6 +3,7 @@ import { useState } from "react";
 export default function QuestionCard(props: {
   label: string;
   type: string;
+  options?: string[];
   updateIndexCB: () => void;
   addAnswerCB: (ans: string) => void;
 }) {
@@ -16,14 +17,51 @@ export default function QuestionCard(props: {
       }}
     >
       <label htmlFor="answer">{props.label}</label>
-      <input
-        name="answer"
-        id="answer"
-        className="border-1 focus:outline-none text-white border-slate-600 w-full bg-[#485d74] rounded-lg p-2 my-2 flex-1"
-        value={ansState}
-        onChange={(e) => setAnsState(e.target.value)}
-        type={props.type}
-      />
+      {(() => {
+        if (props.type === "textarea") {
+          return (
+            <textarea
+              name="answer"
+              id="answer"
+              className="border-1 focus:outline-none text-white border-slate-600 w-full bg-[#485d74] rounded-lg p-2 my-2 flex-1"
+              value={ansState}
+              onChange={(e) => setAnsState(e.target.value)}
+            ></textarea>
+          );
+        } else if (props.type === "radio") {
+          return (
+            <div>
+              {props.options?.map((option, index) => (
+                <div key={index} className="mr-5 my-5 inline-block">
+                  <label className="mr-2 py-2">{option}</label>
+                  <input
+                    className="bg-slate-500 text-white font-semibold"
+                    key={index}
+                    value={option}
+                    type="radio"
+                    name="radio"
+                    onChange={(e) => setAnsState(e.target.value)}
+                  />
+                </div>
+              ))}
+            </div>
+          );
+        } else if (props.type === "textarea") {
+          return <div>textarea</div>;
+        } else {
+          return (
+            <input
+              name="answer"
+              id="answer"
+              className="border-1 focus:outline-none text-white border-slate-600 w-full bg-[#485d74] rounded-lg p-2 my-2 flex-1"
+              value={ansState}
+              onChange={(e) => setAnsState(e.target.value)}
+              type={props.type}
+            />
+          );
+        }
+      })()}
+
       <button
         onClick={(_) => {
           props.addAnswerCB(ansState);
