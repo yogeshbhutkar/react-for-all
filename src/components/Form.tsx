@@ -3,9 +3,15 @@ import LabeledInputs from "./LabeledInputs";
 import { getLocalForms } from "../App";
 import { saveLocalForms } from "../App";
 import { navigate } from "raviger";
-import { formField, formData, textFieldTypes } from "../types/formTypes";
+import {
+  formField,
+  formData,
+  textFieldTypes,
+  radioField,
+} from "../types/formTypes";
 import LabeledDropdown from "./LabeledDropdown";
 import LabeledRadio from "./LabeledRadio";
+import LabeledMultiSelect from "./LabeledMultiSelect";
 
 const formFields: formField[] = [
   {
@@ -41,13 +47,6 @@ const formFields: formField[] = [
     id: 5,
     label: "Phone Number",
     type: "tel",
-    value: "",
-  },
-  {
-    kind: "radio",
-    id: 6,
-    label: "Preference",
-    options: ["High", "Low"],
     value: "",
   },
 ];
@@ -162,6 +161,20 @@ export default function Form(props: { formId: number }) {
           },
         ],
       });
+    } else if (newType === "multi-select") {
+      setState({
+        ...state,
+        formFields: [
+          ...state.formFields,
+          {
+            kind: "multiple",
+            id: Number(new Date()),
+            options: [],
+            label: newField,
+            value: "",
+          },
+        ],
+      });
     } else {
       setState({
         ...state,
@@ -231,13 +244,16 @@ export default function Form(props: { formId: number }) {
     console.log(type);
   }, [type]);
 
-  const getAllOptions = (oldOptions: string[], option: string) => {
-    return [...oldOptions, option];
+  const getAllOptions = (
+    oldOptions: { id: number; option: string }[],
+    option: string
+  ) => {
+    return [...oldOptions, { id: Number(new Date()), option: option }];
   };
 
   const addOption = (id: number, str: string) => {
     let prevState = state.formFields.find((ele) => ele.id === id);
-    let oldOption: string[] = [];
+    let oldOption: { id: number; option: string }[] = [];
     if (prevState && "options" in prevState) {
       oldOption = [...prevState.options];
     }
@@ -246,7 +262,9 @@ export default function Form(props: { formId: number }) {
       formFields: state.formFields.map((ele) => {
         if (
           ele.id === id &&
-          (ele.kind === "dropdown" || ele.kind === "radio")
+          (ele.kind === "dropdown" ||
+            ele.kind === "radio" ||
+            ele.kind === "multiple")
         ) {
           return {
             ...ele,
@@ -259,6 +277,69 @@ export default function Form(props: { formId: number }) {
     });
     console.log(state);
     setOption("");
+  };
+
+  const removeElement = (id: number, formID: number) => {
+    const formfields = state.formFields.filter(
+      (field) => field.id === formID
+    )[0] as radioField;
+
+    setState({
+      ...state,
+      formFields: state.formFields.map((ele) => {
+        if (
+          ele.id === formID &&
+          (ele.kind === "dropdown" ||
+            ele.kind === "radio" ||
+            ele.kind === "multiple")
+        ) {
+          return {
+            ...ele,
+            options: formfields.options.filter((ele) => ele.id !== id),
+          };
+        } else {
+          return ele;
+        }
+      }),
+    });
+  };
+
+  const updateRadioOption = (id: number, stOption: string, formID: number) => {
+    console.log(option);
+
+    const formfields = state.formFields.filter(
+      (field) => field.id === formID
+    )[0] as radioField;
+
+    setState({
+      ...state,
+      formFields: state.formFields.map((ele) => {
+        if (
+          ele.id === formID &&
+          (ele.kind === "dropdown" ||
+            ele.kind === "radio" ||
+            ele.kind === "multiple")
+        ) {
+          return {
+            ...ele,
+            options: formfields.options.map((ele) => {
+              if (ele.id === id) {
+                return {
+                  ...ele,
+                  option: stOption,
+                };
+              } else {
+                return ele;
+              }
+            }),
+          };
+        } else {
+          return ele;
+        }
+      }),
+    });
+
+    console.log(state);
   };
 
   return (
@@ -297,6 +378,8 @@ export default function Form(props: { formId: number }) {
                   options={field.options}
                   removeFieldCB={removeField}
                   addOptionCB={addOption}
+                  removeElementCB={removeElement}
+                  updateRadioOptionCB={updateRadioOption}
                 />
               );
             case "radio":
@@ -311,6 +394,8 @@ export default function Form(props: { formId: number }) {
                   option={option}
                   setOptionCB={setOption}
                   addOptionCB={addOption}
+                  removeElementCB={removeElement}
+                  updateRadioOptionCB={updateRadioOption}
                 />
               );
             case "textarea":
@@ -323,6 +408,20 @@ export default function Form(props: { formId: number }) {
                   type="textarea"
                   removeFieldCB={removeField}
                   updateFormCB={updateForm}
+                />
+              );
+            case "multiple":
+              return (
+                <LabeledMultiSelect
+                  id={field.id}
+                  key={field.id}
+                  label={field.label}
+                  value={field.value}
+                  options={field.options}
+                  removeFieldCB={removeField}
+                  addOptionCB={addOption}
+                  removeElementCB={removeElement}
+                  updateRadioOptionCB={updateRadioOption}
                 />
               );
             default:

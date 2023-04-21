@@ -1,14 +1,28 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import Select from "react-select";
 
 export default function QuestionCard(props: {
   label: string;
   type: string;
-  options?: string[];
+  options?: { id: number; option: string }[];
   updateIndexCB: () => void;
   addAnswerCB: (ans: string) => void;
 }) {
-  const [ansState, setAnsState] = useState("");
+  const getAllOptions = useCallback(() => {
+    let options: { label: string; value: string }[] = [];
+    if (props.options)
+      props.options.forEach((ele) =>
+        options.push({ label: ele.option, value: ele.option })
+      );
+    return options;
+  }, [props.options]);
 
+  useEffect(() => {
+    setOptions(getAllOptions());
+  }, [props.options, getAllOptions]);
+
+  const [options, setOptions] = useState(getAllOptions);
+  const [ansState, setAnsState] = useState<string>("");
   return (
     <form
       onSubmit={(_) => {
@@ -33,11 +47,11 @@ export default function QuestionCard(props: {
             <div>
               {props.options?.map((option, index) => (
                 <div key={index} className="mr-5 my-5 inline-block">
-                  <label className="mr-2 py-2">{option}</label>
+                  <label className="mr-2 py-2">{option.option}</label>
                   <input
                     className="bg-slate-500 text-white font-semibold"
                     key={index}
-                    value={option}
+                    value={option.option}
                     type="radio"
                     name="radio"
                     onChange={(e) => setAnsState(e.target.value)}
@@ -46,8 +60,17 @@ export default function QuestionCard(props: {
               ))}
             </div>
           );
-        } else if (props.type === "textarea") {
-          return <div>textarea</div>;
+        } else if (props.type === "multiple") {
+          return (
+            <Select
+              isMulti
+              name="options"
+              options={options}
+              className="basic-multi-select bg-[#485d74] text-black w-full"
+              classNamePrefix="select"
+              onChange={(option) => console.log(option)}
+            />
+          );
         } else {
           return (
             <input

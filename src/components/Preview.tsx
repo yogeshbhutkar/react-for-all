@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { getLocalForms } from "../App";
-import { DropdownField, formField, textFieldTypes } from "../types/formTypes";
+import { DropdownField, formField } from "../types/formTypes";
 import QuestionCard from "./QuestionCard";
 import { navigate } from "raviger";
-import LabeledRadio from "./LabeledRadio";
 
 export default function Preview(props: { previewId: Number }) {
   const getAllQuestions: () => formField[] = useCallback(() => {
@@ -54,7 +53,7 @@ export default function Preview(props: { previewId: Number }) {
   useEffect(() => {
     console.log(getAllQuestions());
     console.log(answers);
-  }, [answers]);
+  }, [answers, getAllQuestions]);
 
   return (
     <>
@@ -106,6 +105,7 @@ export default function Preview(props: { previewId: Number }) {
                       onChange={(e) => {
                         addAnswer(e.target.value);
                         updateIndex();
+                        updateIndex();
                         console.log(answers);
                       }}
                     >
@@ -120,9 +120,9 @@ export default function Preview(props: { previewId: Number }) {
                           <option
                             className="bg-slate-500 text-white font-semibold"
                             key={index}
-                            value={option}
+                            value={option.option}
                           >
-                            {option}
+                            {option.option}
                           </option>
                         )
                       )}
@@ -133,6 +133,16 @@ export default function Preview(props: { previewId: Number }) {
                     <QuestionCard
                       label={currentQuestion.label}
                       type="textarea"
+                      addAnswerCB={addAnswer}
+                      updateIndexCB={updateIndex}
+                    />
+                  );
+                } else if (currentQuestion.kind === "multiple") {
+                  return (
+                    <QuestionCard
+                      label={currentQuestion.label}
+                      type="multiple"
+                      options={currentQuestion.options}
                       addAnswerCB={addAnswer}
                       updateIndexCB={updateIndex}
                     />

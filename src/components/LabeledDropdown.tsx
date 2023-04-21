@@ -1,12 +1,15 @@
 import { useState } from "react";
+import OptionComponent from "./OptionComponent";
 
 export default function LabeledDropdown(props: {
   id: number;
   label: string;
   value: string;
-  options: string[];
+  options: { id: number; option: string }[];
   removeFieldCB: (id: number) => void;
   addOptionCB: (id: number, str: string) => void;
+  removeElementCB: (id: number, formID: number) => void;
+  updateRadioOptionCB: (id: number, option: string, formID: number) => void;
 }) {
   const [option, setOption] = useState("");
 
@@ -26,9 +29,9 @@ export default function LabeledDropdown(props: {
             <option
               className="bg-slate-500 text-white font-semibold"
               key={index}
-              value={question}
+              value={question.option}
             >
-              {question}
+              {question.option}
             </option>
           ))}
         </select>
@@ -51,6 +54,19 @@ export default function LabeledDropdown(props: {
             />
           </svg>
         </button>
+      </div>
+      <div>
+        {props.options.map((question, index) => (
+          <OptionComponent
+            id={props.id}
+            key={index}
+            index={index}
+            option={question}
+            options={props.options}
+            removeElementCB={props.removeElementCB}
+            updateRadioOptionCB={props.updateRadioOptionCB}
+          />
+        ))}
       </div>
       <div className="flex">
         <input

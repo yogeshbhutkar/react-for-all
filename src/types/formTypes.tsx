@@ -26,15 +26,15 @@ export type DropdownField = {
   kind: "dropdown";
   id: number;
   label: string;
-  options: string[];
+  options: { id: number; option: string }[];
   value: string;
 };
 
-type radioField = {
+export type radioField = {
   kind: "radio";
   id: number;
   label: string;
-  options: string[];
+  options: { id: number; option: string }[];
   value: string;
 };
 
@@ -48,7 +48,7 @@ type textArea = {
 type multiple = {
   kind: "multiple";
   id: number;
-  options: string[];
+  options: { id: number; option: string }[];
   label: string;
   value: string;
 };

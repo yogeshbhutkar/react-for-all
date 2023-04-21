@@ -1,25 +1,44 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import Select from "react-select";
 import OptionComponent from "./OptionComponent";
 
-function LabeledRadio(props: {
+export default function LabeledMultiSelect(props: {
   id: number;
   label: string;
   value: string;
   options: { id: number; option: string }[];
-  option: string;
   removeFieldCB: (id: number) => void;
-  setOptionCB: (param: string) => void;
   addOptionCB: (id: number, str: string) => void;
   removeElementCB: (id: number, formID: number) => void;
   updateRadioOptionCB: (id: number, option: string, formID: number) => void;
 }) {
+  const getAllOptions = useCallback(() => {
+    let options: { label: string; value: string }[] = [];
+    props.options.forEach((ele) =>
+      options.push({ label: ele.option, value: ele.option })
+    );
+    return options;
+  }, [props.options]);
+
+  useEffect(() => {
+    setOptions(getAllOptions());
+  }, [props.options, getAllOptions]);
+
   const [option, setOption] = useState("");
 
-  return (
-    <div key={props.id}>
-      <div className="flex mb-2">
-        <p className="inline my-2">{props.label}</p>
+  const [options, setOptions] = useState(getAllOptions);
 
+  return (
+    <div>
+      <p>{props.label}</p>
+      <div className="flex mb-4">
+        <Select
+          isMulti
+          name="options"
+          options={options}
+          className="basic-multi-select bg-[#485d74] text-black w-full"
+          classNamePrefix="select"
+        />
         <button
           onClick={(_) => props.removeFieldCB(props.id)}
           className="px-3 inline text-amber-500 hover:text-amber-600  py-2 rounded-xl font-semibold"
@@ -40,14 +59,13 @@ function LabeledRadio(props: {
           </svg>
         </button>
       </div>
-
-      <div className="block mb-4">
-        {props.options.map((option, index) => (
+      <div>
+        {props.options.map((question, index) => (
           <OptionComponent
             id={props.id}
             key={index}
             index={index}
-            option={option}
+            option={question}
             options={props.options}
             removeElementCB={props.removeElementCB}
             updateRadioOptionCB={props.updateRadioOptionCB}
@@ -66,6 +84,7 @@ function LabeledRadio(props: {
         <button
           onClick={() => {
             props.addOptionCB(props.id, option);
+            setOptions((prev) => [...prev, { label: option, value: option }]);
             setOption("");
           }}
           className="px-5 mx-2 bg-amber-500 hover:bg-amber-600 shadow-amber-500/40 my-2 shadow-lg  text-white py-2 rounded-xl font-semibold"
@@ -76,5 +95,3 @@ function LabeledRadio(props: {
     </div>
   );
 }
-
-export default LabeledRadio;
