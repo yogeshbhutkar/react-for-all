@@ -225,6 +225,16 @@ export default function Form(props: { formId: number }) {
   const [type, setType] = useState<textFieldTypes>("text");
   const [option, setOption] = useState("");
 
+  const [renderAddForm, setRenderAddForm] = useState<boolean>();
+
+  useEffect(() => {
+    if (props.formId === -1) {
+      setRenderAddForm(true);
+    } else {
+      setRenderAddForm(false);
+    }
+  }, [props.formId]);
+
   useEffect(() => {
     state.id !== props.formId && navigate(`/forms/${state.id}`);
   }, [state.id, props.formId]);
@@ -503,14 +513,18 @@ export default function Form(props: { formId: number }) {
           Add Field
         </button>
       </div>
-      <div className="flex gap-4">
-        <button
-          onClick={saveForm}
-          className="bg-amber-500 w-full hover:bg-amber-600 shadow-amber-500/40 mt-4 shadow-lg  text-white px-5 py-2 rounded-xl font-semibold"
-        >
-          Add Form
-        </button>
-      </div>
+      {renderAddForm ? (
+        <div className="flex gap-4">
+          <button
+            onClick={saveForm}
+            className="bg-amber-500 w-full hover:bg-amber-600 shadow-amber-500/40 mt-4 shadow-lg  text-white px-5 py-2 rounded-xl font-semibold"
+          >
+            Add Form
+          </button>
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 }
