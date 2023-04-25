@@ -14,6 +14,8 @@ export type textFieldTypes =
   | "textarea"
   | "multi-select";
 
+export type formKinds = "text" | "dropdown" | "radio" | "textarea" | "multiple";
+
 type TextField = {
   kind: "text";
   id: number;
@@ -48,8 +50,8 @@ type textArea = {
 type multiple = {
   kind: "multiple";
   id: number;
-  options: { id: number; option: string }[];
   label: string;
+  options: { id: number; option: string }[];
   value: string;
 };
 
@@ -59,3 +61,17 @@ export type formField =
   | radioField
   | textArea
   | multiple;
+
+// Action types.
+type RemoveAction = {
+  type: "remove_field";
+  id: number;
+};
+
+type AddAction = {
+  type: "add_field";
+  kind: formKinds;
+  label: string;
+};
+
+export type FormAction = AddAction | RemoveAction;
