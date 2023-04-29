@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 import { getLocalForms } from "../App";
-import { DropdownField, formField } from "../types/formTypes";
+import { DropdownField, UserAnswer, formField } from "../types/formTypes";
 import QuestionCard from "./QuestionCard";
 import { navigate } from "raviger";
 
@@ -20,9 +20,16 @@ export default function Preview(props: { previewId: Number }) {
     // console.log("new index" + index);
   };
 
-  const addAnswer = (ans: string) => {
-    setAnswers((prev) => [...prev, ans]);
+  const addAnswer = (ans: string | string[], questionId: number) => {
+    // setAnswers((prev) => [...prev, ans]);
     // console.log(answers);
+    dispatch({
+      type: "add_answer",
+      id: Number(new Date()),
+      answer: ans,
+      questionId: questionId,
+    });
+    console.log(answers + "answers");
   };
   const detectError = () => {
     if (getAllQuestions().length === 0) {
@@ -40,14 +47,45 @@ export default function Preview(props: { previewId: Number }) {
     [getAllQuestions]
   );
 
+  type AddAnswer = {
+    type: "add_answer";
+    id: number;
+    questionId: number;
+    answer: string | string[];
+  };
+
+  type AddAction = AddAnswer;
+
+  const reducer: (state: UserAnswer[], action: AddAction) => UserAnswer[] = (
+    state: UserAnswer[],
+    action: AddAction
+  ) => {
+    switch (action.type) {
+      case "add_answer": {
+        const newState = [
+          ...state,
+          {
+            id: action.id,
+            questionId: action.questionId,
+            answer: action.answer,
+          },
+        ];
+        return newState;
+      }
+    }
+  };
+
   const [quit, setQuit] = useState(false);
   const [index, setIndex] = useState(0);
+  const [questionId, setQuestionId] = useState(getQuestion(index).id);
   const [currentQuestion, setCurrentQuestion] = useState(getQuestion(index));
-  const [answers, setAnswers] = useState<string[]>([]);
+  // const [answers, setAnswers] = useState<string[]>([]);
+  const [answers, dispatch] = useReducer(reducer, []);
   const [error] = useState<boolean>(detectError());
 
   useEffect(() => {
     setCurrentQuestion(getQuestion(index));
+    setQuestionId(getQuestion(index).id);
   }, [index, getQuestion]);
 
   useEffect(() => {
@@ -84,6 +122,7 @@ export default function Preview(props: { previewId: Number }) {
                         type={currentQuestion.type}
                         addAnswerCB={addAnswer}
                         updateIndexCB={updateIndex}
+                        questionId={questionId}
                       />
                     </div>
                   );
@@ -95,6 +134,7 @@ export default function Preview(props: { previewId: Number }) {
                       options={currentQuestion.options}
                       addAnswerCB={addAnswer}
                       updateIndexCB={updateIndex}
+                      questionId={questionId}
                     />
                   );
                 } else if (currentQuestion.kind === "dropdown") {
@@ -103,7 +143,7 @@ export default function Preview(props: { previewId: Number }) {
                       className="px-3 bg-amber-500 hover:bg-amber-600 shadow-amber-500/40 my-2 shadow-lg  text-white py-2 rounded-xl font-semibold"
                       value={currentQuestion.label}
                       onChange={(e) => {
-                        addAnswer(e.target.value);
+                        addAnswer(e.target.value, questionId);
                         updateIndex();
                         updateIndex();
                         console.log(answers);
@@ -135,6 +175,7 @@ export default function Preview(props: { previewId: Number }) {
                       type="textarea"
                       addAnswerCB={addAnswer}
                       updateIndexCB={updateIndex}
+                      questionId={questionId}
                     />
                   );
                 } else if (currentQuestion.kind === "multiple") {
@@ -145,6 +186,7 @@ export default function Preview(props: { previewId: Number }) {
                       options={currentQuestion.options}
                       addAnswerCB={addAnswer}
                       updateIndexCB={updateIndex}
+                      questionId={questionId}
                     />
                   );
                 }

@@ -5,8 +5,9 @@ export default function QuestionCard(props: {
   label: string;
   type: string;
   options?: { id: number; option: string }[];
+  questionId: number;
   updateIndexCB: () => void;
-  addAnswerCB: (ans: string) => void;
+  addAnswerCB: (ans: string | string[], questionId: number) => void;
 }) {
   const getAllOptions = useCallback(() => {
     let options: { label: string; value: string }[] = [];
@@ -22,7 +23,13 @@ export default function QuestionCard(props: {
   }, [props.options, getAllOptions]);
 
   const [options, setOptions] = useState(getAllOptions);
-  const [ansState, setAnsState] = useState<string>("");
+  const [ansState, setAnsState] = useState<string | string[]>("");
+  const [multiOptions, setMultiOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    setAnsState(multiOptions);
+  }, [multiOptions]);
+
   return (
     <form
       onSubmit={(_) => {
@@ -68,7 +75,9 @@ export default function QuestionCard(props: {
               options={options}
               className="basic-multi-select bg-[#485d74] text-black w-full"
               classNamePrefix="select"
-              onChange={(option) => console.log(option)}
+              onChange={(option) =>
+                setMultiOptions(() => option.map((ele) => ele.label))
+              }
             />
           );
         } else {
@@ -87,7 +96,13 @@ export default function QuestionCard(props: {
 
       <button
         onClick={(_) => {
-          props.addAnswerCB(ansState);
+          // multiBoolean
+          //   ? props.addAnswerCB(multiOptions, props.questionId)
+          props.addAnswerCB(ansState, props.questionId);
+          // if (multiBoolean === true) {
+          //   setMultiBoolean(false);
+          //   setMultiOptions([]);
+          // }
           setAnsState("");
         }}
         className="bg-amber-500 w-full hover:bg-amber-600 shadow-amber-500/40 mt-6 shadow-lg  text-white px-5 py-2 rounded-xl font-semibold"

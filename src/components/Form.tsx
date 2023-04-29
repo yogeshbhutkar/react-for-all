@@ -107,6 +107,13 @@ type FormAction =
   | UpdateRadio
   | SaveForm;
 
+const getAllOptions = (
+  oldOptions: { id: number; option: string }[],
+  option: string
+) => {
+  return [...oldOptions, { id: Number(new Date()), option: option }];
+};
+
 export default function Form(props: { formId: number }) {
   //Reducer.
   const reducer: (state: formData, action: FormAction) => formData = (
@@ -115,7 +122,14 @@ export default function Form(props: { formId: number }) {
   ) => {
     switch (action.type) {
       case "add_field": {
-        const newField = getNewField(action.kind, action.label)!;
+        console.log(action.kind + "kind");
+        let newField;
+        if (action.kind === "multi-select") {
+          newField = getNewField("multi-select", action.label);
+        } else {
+          newField = getNewField(action.kind, action.label);
+        }
+        console.log(newField);
         if (newField.label.length > 0)
           return {
             ...state,
@@ -143,6 +157,7 @@ export default function Form(props: { formId: number }) {
         if (prevState && "options" in prevState) {
           oldOption = [...prevState.options];
         }
+        const allOptions = getAllOptions(oldOption, action.str);
         return {
           ...state,
           formFields: state.formFields.map((ele) => {
@@ -154,7 +169,7 @@ export default function Form(props: { formId: number }) {
             ) {
               return {
                 ...ele,
-                options: getAllOptions(oldOption, action.str),
+                options: allOptions,
               };
             } else {
               return ele;
@@ -236,17 +251,7 @@ export default function Form(props: { formId: number }) {
           }),
         };
       }
-      case "save_form": {
-        //Updating the ID
-        let curState = state;
-        curState.id = Number(new Date());
 
-        //setting display and state
-        const prev_data = getLocalForms();
-        saveLocalForms([...prev_data, curState]);
-        console.log(getLocalForms());
-        return initialState()[0];
-      }
       default: {
         return {
           ...state,
@@ -256,34 +261,74 @@ export default function Form(props: { formId: number }) {
     }
   };
 
+  const saveForm = () => {
+    const prev_data = getLocalForms();
+    state.id = Number(new Date());
+    saveLocalForms([...prev_data, state]);
+    navigate("/");
+  };
+
   const getNewField = (formKind: formKinds, formLabel: string) => {
-    if (
-      formKind === "dropdown" ||
-      formKind === "radio" ||
-      formKind === "multiple"
-    ) {
-      return {
-        kind: formKind,
-        id: Number(new Date()),
-        label: formLabel,
-        options: [],
-        value: "",
-      };
-    } else if (formKind === "text") {
-      return {
-        kind: formKind,
-        id: Number(new Date()),
-        label: formLabel,
-        type: type,
-        value: "",
-      };
-    } else if (formKind === "textarea") {
-      return {
-        kind: formKind,
-        id: Number(new Date()),
-        label: formLabel,
-        value: "",
-      };
+    const textType: formKinds = "text";
+    const multiSelect: formKinds = "multiple";
+    switch (formKind) {
+      case "dropdown":
+        return {
+          kind: formKind,
+          id: Number(new Date()),
+          label: formLabel,
+          options: [],
+          value: "",
+        };
+
+      case "radio":
+        return {
+          kind: formKind,
+          id: Number(new Date()),
+          label: formLabel,
+          options: [],
+          value: "",
+        };
+
+      case "multi-select": {
+        return {
+          kind: multiSelect,
+          id: Number(new Date()),
+          label: formLabel,
+          options: [],
+          value: "",
+        };
+      }
+
+      case "text": {
+        return {
+          kind: formKind,
+          id: Number(new Date()),
+          label: formLabel,
+          type: formKind,
+          value: "",
+        };
+      }
+
+      case "textarea": {
+        return {
+          kind: formKind,
+          id: Number(new Date()),
+          label: formLabel,
+          value: "",
+        };
+      }
+
+      default: {
+        console.log("default");
+        return {
+          kind: textType,
+          id: Number(new Date()),
+          label: formLabel,
+          type: formKind,
+          value: "",
+        };
+      }
     }
   };
 
@@ -320,104 +365,6 @@ export default function Form(props: { formId: number }) {
     };
     return newForm;
   };
-
-  const initialState: () => formData[] = () => {
-    const localForms = getLocalForms();
-    if (localForms.length > 0) {
-      return localForms;
-    }
-
-    //dummy form to prevent null.
-    const newForm = {
-      id: -1,
-      title: "Untitled Form",
-      formFields: formFields,
-    };
-    saveLocalForms([...localForms, newForm]);
-    return getLocalForms();
-  };
-
-  // const addField = () => {
-  //   const newType = type;
-  //   if (newType === "dropdown") {
-  //     setState({
-  //       ...state,
-  //       formFields: [
-  //         ...state.formFields,
-  //         {
-  //           kind: "dropdown",
-  //           id: Number(new Date()),
-  //           label: newField,
-  //           options: [],
-  //           value: "",
-  //         },
-  //       ],
-  //     });
-  //   } else if (newType === "radio") {
-  //     setState({
-  //       ...state,
-  //       formFields: [
-  //         ...state.formFields,
-  //         {
-  //           kind: "radio",
-  //           id: Number(new Date()),
-  //           label: newField,
-  //           options: [],
-  //           value: "",
-  //         },
-  //       ],
-  //     });
-  //   } else if (newType === "textarea") {
-  //     setState({
-  //       ...state,
-  //       formFields: [
-  //         ...state.formFields,
-  //         {
-  //           kind: "textarea",
-  //           id: Number(new Date()),
-  //           label: newField,
-  //           value: "",
-  //         },
-  //       ],
-  //     });
-  //   } else if (newType === "multi-select") {
-  //     setState({
-  //       ...state,
-  //       formFields: [
-  //         ...state.formFields,
-  //         {
-  //           kind: "multiple",
-  //           id: Number(new Date()),
-  //           options: [],
-  //           label: newField,
-  //           value: "",
-  //         },
-  //       ],
-  //     });
-  //   } else {
-  //     setState({
-  //       ...state,
-  //       formFields: [
-  //         ...state.formFields,
-  //         {
-  //           kind: "text",
-  //           id: Number(new Date()),
-  //           label: newField,
-  //           type: newType,
-  //           value: "",
-  //         },
-  //       ],
-  //     });
-  //   }
-  //   setNewField("");
-  // };
-
-  // const removeField = (id: number) => {
-  //   setState({
-  //     ...state,
-  //     formFields: state.formFields.filter((field) => field.id !== id),
-  //   });
-  // };
 
   //State variables
 
@@ -458,13 +405,6 @@ export default function Form(props: { formId: number }) {
   useEffect(() => {
     console.log(type);
   }, [type]);
-
-  const getAllOptions = (
-    oldOptions: { id: number; option: string }[],
-    option: string
-  ) => {
-    return [...oldOptions, { id: Number(new Date()), option: option }];
-  };
 
   return (
     <div className="flex flex-col gap-2 p-4 divide-y divide-slate-500 divide-dotted">
@@ -605,7 +545,7 @@ export default function Form(props: { formId: number }) {
                 />
               );
             default:
-              return <div></div>;
+              return <div key={field.id}></div>;
           }
         })}
       </div>
@@ -677,13 +617,14 @@ export default function Form(props: { formId: number }) {
           </option>
         </select>
         <button
-          onClick={(_) =>
+          onClick={(_) => {
             dispatch({
               type: "add_field",
               label: newField,
               kind: type as formKinds,
-            })
-          }
+            });
+            setNewField("");
+          }}
           className="px-5 bg-amber-500 hover:bg-amber-600 shadow-amber-500/40 my-2 shadow-lg  text-white py-2 rounded-xl font-semibold"
         >
           Add Field
@@ -692,10 +633,7 @@ export default function Form(props: { formId: number }) {
       {renderAddForm ? (
         <div className="flex gap-4">
           <button
-            onClick={() => {
-              dispatch({ type: "save_form" });
-              navigate("/");
-            }}
+            onClick={saveForm}
             className="bg-amber-500 w-full hover:bg-amber-600 shadow-amber-500/40 mt-4 shadow-lg  text-white px-5 py-2 rounded-xl font-semibold"
           >
             Add Form

@@ -12,9 +12,16 @@ export type textFieldTypes =
   | "dropdown"
   | "radio"
   | "textarea"
-  | "multi-select";
+  | "multi-select"
+  | "multiple";
 
-export type formKinds = "text" | "dropdown" | "radio" | "textarea" | "multiple";
+export type formKinds =
+  | "text"
+  | "dropdown"
+  | "radio"
+  | "textarea"
+  | "multiple"
+  | "multi-select";
 
 type TextField = {
   kind: "text";
@@ -55,12 +62,21 @@ type multiple = {
   value: string;
 };
 
+type multi_select = {
+  kind: "multi-select";
+  id: number;
+  label: string;
+  options: { id: number; option: string }[];
+  value: string;
+};
+
 export type formField =
   | DropdownField
   | TextField
   | radioField
   | textArea
-  | multiple;
+  | multiple
+  | multi_select;
 
 // Action types.
 type RemoveAction = {
@@ -72,6 +88,12 @@ type AddAction = {
   type: "add_field";
   kind: formKinds;
   label: string;
+};
+
+export type UserAnswer = {
+  id: number;
+  questionId: number;
+  answer: string | string[];
 };
 
 export type FormAction = AddAction | RemoveAction;
