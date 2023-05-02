@@ -10,16 +10,6 @@ export default function Preview(props: { previewId: Number }) {
     return form[0].formFields;
   }, [props.previewId]);
 
-  const updateIndex = () => {
-    // console.log(index);
-    if (index === getAllQuestions().length - 1) {
-      setQuit(true);
-      return;
-    }
-    setIndex((idx) => idx + 1);
-    // console.log("new index" + index);
-  };
-
   const addAnswer = (ans: string | string[], questionId: number) => {
     // setAnswers((prev) => [...prev, ans]);
     // console.log(answers);
@@ -75,17 +65,51 @@ export default function Preview(props: { previewId: Number }) {
     }
   };
 
+  type CurrentQuestion = {
+    type: "current_question";
+  };
+
+  type UpdateQuestion = {
+    type: "update_question";
+  };
+
+  const questionReducer: (
+    state: formField,
+    action: CurrentQuestion | UpdateQuestion
+  ) => formField = (
+    state: formField,
+    action: CurrentQuestion | UpdateQuestion
+  ) => {
+    switch (action.type) {
+      case "current_question": {
+        const newState = getQuestion(index);
+        setQuestionId(getQuestion(index).id);
+        return newState;
+      }
+
+      case "update_question": {
+        if (index === getAllQuestions().length - 1) {
+          setQuit(true);
+          return getQuestion(index);
+        }
+        setIndex((idx) => idx + 1);
+        return getQuestion(index);
+      }
+    }
+  };
+
   const [quit, setQuit] = useState(false);
   const [index, setIndex] = useState(0);
   const [questionId, setQuestionId] = useState(getQuestion(index).id);
-  const [currentQuestion, setCurrentQuestion] = useState(getQuestion(index));
-  // const [answers, setAnswers] = useState<string[]>([]);
   const [answers, dispatch] = useReducer(reducer, []);
+  const [currentQuestion, dispatchQuestion] = useReducer(
+    questionReducer,
+    getQuestion(index)
+  );
   const [error] = useState<boolean>(detectError());
 
   useEffect(() => {
-    setCurrentQuestion(getQuestion(index));
-    setQuestionId(getQuestion(index).id);
+    dispatchQuestion({ type: "current_question" });
   }, [index, getQuestion]);
 
   useEffect(() => {
@@ -121,7 +145,9 @@ export default function Preview(props: { previewId: Number }) {
                         label={currentQuestion.label}
                         type={currentQuestion.type}
                         addAnswerCB={addAnswer}
-                        updateIndexCB={updateIndex}
+                        updateIndexCB={() =>
+                          dispatchQuestion({ type: "update_question" })
+                        }
                         questionId={questionId}
                       />
                     </div>
@@ -133,7 +159,9 @@ export default function Preview(props: { previewId: Number }) {
                       type="radio"
                       options={currentQuestion.options}
                       addAnswerCB={addAnswer}
-                      updateIndexCB={updateIndex}
+                      updateIndexCB={() =>
+                        dispatchQuestion({ type: "update_question" })
+                      }
                       questionId={questionId}
                     />
                   );
@@ -144,8 +172,8 @@ export default function Preview(props: { previewId: Number }) {
                       value={currentQuestion.label}
                       onChange={(e) => {
                         addAnswer(e.target.value, questionId);
-                        updateIndex();
-                        updateIndex();
+                        dispatchQuestion({ type: "update_question" });
+                        dispatchQuestion({ type: "update_question" });
                         console.log(answers);
                       }}
                     >
@@ -174,7 +202,9 @@ export default function Preview(props: { previewId: Number }) {
                       label={currentQuestion.label}
                       type="textarea"
                       addAnswerCB={addAnswer}
-                      updateIndexCB={updateIndex}
+                      updateIndexCB={() =>
+                        dispatchQuestion({ type: "update_question" })
+                      }
                       questionId={questionId}
                     />
                   );
@@ -185,7 +215,9 @@ export default function Preview(props: { previewId: Number }) {
                       type="multiple"
                       options={currentQuestion.options}
                       addAnswerCB={addAnswer}
-                      updateIndexCB={updateIndex}
+                      updateIndexCB={() =>
+                        dispatchQuestion({ type: "update_question" })
+                      }
                       questionId={questionId}
                     />
                   );
