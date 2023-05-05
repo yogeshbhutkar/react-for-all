@@ -84,10 +84,28 @@ type RemoveAction = {
   id: number;
 };
 
-type AddAction = {
-  type: "add_field";
-  kind: formKinds;
-  label: string;
+// type AddAction = {
+//   type: "add_field";
+//   kind: formKinds;
+//   label: string;
+// };
+
+export type CurrentQuestion = {
+  type: "current_question";
+  getQuestion: (id: number) => formField;
+  getAllQuestions: () => formField[];
+  setQuestionId: React.Dispatch<React.SetStateAction<number>>;
+  index: number;
+};
+
+export type UpdateQuestion = {
+  type: "update_question";
+  getQuestion: (id: number) => formField;
+  getAllQuestions: () => formField[];
+  setQuit: React.Dispatch<React.SetStateAction<boolean>>;
+  setQuestionId: React.Dispatch<React.SetStateAction<number>>;
+  setIndex: React.Dispatch<React.SetStateAction<number>>;
+  index: number;
 };
 
 export type UserAnswer = {
@@ -95,5 +113,69 @@ export type UserAnswer = {
   questionId: number;
   answer: string | string[];
 };
+
+type AddAnswer = {
+  type: "add_answer";
+  id: number;
+  questionId: number;
+  answer: string | string[];
+};
+
+type RemoveActionForm = {
+  type: "remove_field";
+  id: number;
+};
+
+type AddActionForm = {
+  type: "add_field";
+  kind: formKinds;
+  label: string;
+};
+
+type AddOption = {
+  type: "add_option";
+  id: number;
+  str: string;
+};
+
+type RemoveOption = {
+  type: "remove_option";
+  id: number;
+  formID: number;
+};
+
+type UpdateTitleAction = {
+  type: "update_title";
+  title: string;
+};
+
+type UpdateLabel = {
+  type: "update_label";
+  id: number;
+  str: string;
+};
+
+type UpdateRadio = {
+  type: "update_radio";
+  id: number;
+  stOption: string;
+  formID: number;
+};
+
+type SaveForm = {
+  type: "save_form";
+};
+
+export type FormActionForBuilder =
+  | AddActionForm
+  | RemoveActionForm
+  | UpdateTitleAction
+  | AddOption
+  | RemoveOption
+  | UpdateLabel
+  | UpdateRadio
+  | SaveForm;
+
+export type AddAction = AddAnswer;
 
 export type FormAction = AddAction | RemoveAction;

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { getLocalForms } from "../App";
-import { DropdownField, UserAnswer, formField } from "../types/formTypes";
+import { DropdownField, formField } from "../types/formTypes";
 import QuestionCard from "./QuestionCard";
 import { navigate } from "raviger";
+import { questionReducer, reducer } from "../reducer/reducers";
 
 export default function Preview(props: { previewId: Number }) {
   const getAllQuestions: () => formField[] = useCallback(() => {
@@ -11,8 +12,6 @@ export default function Preview(props: { previewId: Number }) {
   }, [props.previewId]);
 
   const addAnswer = (ans: string | string[], questionId: number) => {
-    // setAnswers((prev) => [...prev, ans]);
-    // console.log(answers);
     dispatch({
       type: "add_answer",
       id: Number(new Date()),
@@ -37,67 +36,6 @@ export default function Preview(props: { previewId: Number }) {
     [getAllQuestions]
   );
 
-  type AddAnswer = {
-    type: "add_answer";
-    id: number;
-    questionId: number;
-    answer: string | string[];
-  };
-
-  type AddAction = AddAnswer;
-
-  const reducer: (state: UserAnswer[], action: AddAction) => UserAnswer[] = (
-    state: UserAnswer[],
-    action: AddAction
-  ) => {
-    switch (action.type) {
-      case "add_answer": {
-        const newState = [
-          ...state,
-          {
-            id: action.id,
-            questionId: action.questionId,
-            answer: action.answer,
-          },
-        ];
-        return newState;
-      }
-    }
-  };
-
-  type CurrentQuestion = {
-    type: "current_question";
-  };
-
-  type UpdateQuestion = {
-    type: "update_question";
-  };
-
-  const questionReducer: (
-    state: formField,
-    action: CurrentQuestion | UpdateQuestion
-  ) => formField = (
-    state: formField,
-    action: CurrentQuestion | UpdateQuestion
-  ) => {
-    switch (action.type) {
-      case "current_question": {
-        const newState = getQuestion(index);
-        setQuestionId(getQuestion(index).id);
-        return newState;
-      }
-
-      case "update_question": {
-        if (index === getAllQuestions().length - 1) {
-          setQuit(true);
-          return getQuestion(index);
-        }
-        setIndex((idx) => idx + 1);
-        return getQuestion(index);
-      }
-    }
-  };
-
   const [quit, setQuit] = useState(false);
   const [index, setIndex] = useState(0);
   const [questionId, setQuestionId] = useState(getQuestion(index).id);
@@ -109,8 +47,14 @@ export default function Preview(props: { previewId: Number }) {
   const [error] = useState<boolean>(detectError());
 
   useEffect(() => {
-    dispatchQuestion({ type: "current_question" });
-  }, [index, getQuestion]);
+    dispatchQuestion({
+      type: "current_question",
+      getQuestion: getQuestion,
+      index: index,
+      setQuestionId: setQuestionId,
+      getAllQuestions: getAllQuestions,
+    });
+  }, [index, getQuestion, getAllQuestions]);
 
   useEffect(() => {
     console.log(getAllQuestions());
@@ -146,7 +90,15 @@ export default function Preview(props: { previewId: Number }) {
                         type={currentQuestion.type}
                         addAnswerCB={addAnswer}
                         updateIndexCB={() =>
-                          dispatchQuestion({ type: "update_question" })
+                          dispatchQuestion({
+                            type: "update_question",
+                            getQuestion: getQuestion,
+                            getAllQuestions: getAllQuestions,
+                            setQuit: setQuit,
+                            setQuestionId: setQuestionId,
+                            index: index,
+                            setIndex: setIndex,
+                          })
                         }
                         questionId={questionId}
                       />
@@ -160,7 +112,15 @@ export default function Preview(props: { previewId: Number }) {
                       options={currentQuestion.options}
                       addAnswerCB={addAnswer}
                       updateIndexCB={() =>
-                        dispatchQuestion({ type: "update_question" })
+                        dispatchQuestion({
+                          type: "update_question",
+                          getQuestion: getQuestion,
+                          getAllQuestions: getAllQuestions,
+                          setQuit: setQuit,
+                          setQuestionId: setQuestionId,
+                          index: index,
+                          setIndex: setIndex,
+                        })
                       }
                       questionId={questionId}
                     />
@@ -172,8 +132,24 @@ export default function Preview(props: { previewId: Number }) {
                       value={currentQuestion.label}
                       onChange={(e) => {
                         addAnswer(e.target.value, questionId);
-                        dispatchQuestion({ type: "update_question" });
-                        dispatchQuestion({ type: "update_question" });
+                        dispatchQuestion({
+                          type: "update_question",
+                          getQuestion: getQuestion,
+                          getAllQuestions: getAllQuestions,
+                          setQuit: setQuit,
+                          setQuestionId: setQuestionId,
+                          index: index,
+                          setIndex: setIndex,
+                        });
+                        dispatchQuestion({
+                          type: "update_question",
+                          getQuestion: getQuestion,
+                          getAllQuestions: getAllQuestions,
+                          setQuit: setQuit,
+                          setQuestionId: setQuestionId,
+                          index: index,
+                          setIndex: setIndex,
+                        });
                         console.log(answers);
                       }}
                     >
@@ -203,7 +179,15 @@ export default function Preview(props: { previewId: Number }) {
                       type="textarea"
                       addAnswerCB={addAnswer}
                       updateIndexCB={() =>
-                        dispatchQuestion({ type: "update_question" })
+                        dispatchQuestion({
+                          type: "update_question",
+                          getQuestion: getQuestion,
+                          getAllQuestions: getAllQuestions,
+                          setQuit: setQuit,
+                          setQuestionId: setQuestionId,
+                          index: index,
+                          setIndex: setIndex,
+                        })
                       }
                       questionId={questionId}
                     />
@@ -216,7 +200,15 @@ export default function Preview(props: { previewId: Number }) {
                       options={currentQuestion.options}
                       addAnswerCB={addAnswer}
                       updateIndexCB={() =>
-                        dispatchQuestion({ type: "update_question" })
+                        dispatchQuestion({
+                          type: "update_question",
+                          getQuestion: getQuestion,
+                          getAllQuestions: getAllQuestions,
+                          setQuit: setQuit,
+                          setQuestionId: setQuestionId,
+                          index: index,
+                          setIndex: setIndex,
+                        })
                       }
                       questionId={questionId}
                     />
