@@ -1,20 +1,50 @@
-import { useState } from "react";
-import { formData } from "../types/formTypes";
+import React, { useEffect, useState } from "react";
+import { Form, formData } from "../types/formTypes";
 import { navigate } from "raviger";
+import { deleteListedForm, listForms } from "../utils/apiUtils";
+import { Pagination } from "../types/common";
+import { initialOffset, limit } from "../constants";
+import PageElement from "./PageElement";
+
+const fetchForms = async (
+  setAllFormsCB: (value: Form[]) => void,
+  offset: number,
+  setCount: React.Dispatch<React.SetStateAction<number>>
+) => {
+  try {
+    const data: Pagination<Form> = await listForms({
+      offset: offset,
+      limit: limit,
+    });
+    setAllFormsCB(data.results);
+    setCount(data.count);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 export default function AllForms(props: {
   getLocalFormCB: () => formData[];
   search: string;
 }) {
-  const deleteForm = (id: number) => {
-    const removedArray = props
-      .getLocalFormCB()
-      .filter((item) => item.id !== id);
-    localStorage.setItem("savedForms", JSON.stringify(removedArray));
-    setAllForms(removedArray);
-  };
+  // const deleteForm = (id: number) => {
+  //   const removedArray = props
+  //     .getLocalFormCB()
+  //     .filter((item) => item.id !== id);
+  //   localStorage.setItem("savedForms", JSON.stringify(removedArray));
+  //   setAllForms(removedArray);
+  // };
 
-  const [allForms, setAllForms] = useState(props.getLocalFormCB());
+  const [offset, setOffset] = useState<number>(initialOffset);
+  const [count, setCount] = useState(0);
+
+  const [allForms, setAllForms] = React.useState<Form[]>(
+    props.getLocalFormCB()
+  );
+
+  useEffect(() => {
+    fetchForms(setAllForms, offset, setCount);
+  }, [offset]);
 
   return (
     <div className="px-5 w-full ">
@@ -40,7 +70,18 @@ export default function AllForms(props: {
                 Preview
               </button>
               <button
-                onClick={(_) => deleteForm(ele.id)}
+                onClick={async (_) => {
+                  try {
+                    const response = await deleteListedForm(
+                      ele.id ? ele.id : -1
+                    );
+                    console.log(response);
+                  } catch (err) {
+                    console.log(err);
+                  }
+                  setAllForms(allForms.filter((item) => item.id !== ele.id));
+                  setCount((prev) => prev - 1);
+                }}
                 className="inline px-3 text-amber-300 hover:text-red-300"
               >
                 <svg
@@ -61,6 +102,12 @@ export default function AllForms(props: {
             </div>
           </div>
         ))}
+      <PageElement
+        count={count}
+        items={allForms}
+        offset={offset}
+        setOffsetCB={setOffset}
+      />
     </div>
   );
 }

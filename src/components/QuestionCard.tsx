@@ -3,9 +3,9 @@ import Select from "react-select";
 
 export default function QuestionCard(props: {
   label: string;
-  type: string;
+  type?: string;
   options?: { id: number; option: string }[];
-  questionId: number;
+  questionId?: number;
   updateIndexCB: () => void;
   addAnswerCB: (ans: string | string[], questionId: number) => void;
 }) {
@@ -98,7 +98,8 @@ export default function QuestionCard(props: {
         onClick={(_) => {
           // multiBoolean
           //   ? props.addAnswerCB(multiOptions, props.questionId)
-          props.addAnswerCB(ansState, props.questionId);
+
+          props.addAnswerCB(ansState, props.questionId ? props.questionId : -1);
           // if (multiBoolean === true) {
           //   setMultiBoolean(false);
           //   setMultiOptions([]);

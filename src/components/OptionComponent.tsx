@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 
 export default function OptionComponent(props: {
   index: number;
+  formID: number;
   options: { id: number; option: string }[];
   id: number;
   option: { id: number; option: string };
-  removeElementCB: (id: number, formID: number) => void;
+  removeElementCB: (form_pk: number, id: number, option_id: number) => void;
   updateRadioOptionCB: (id: number, option: string, formID: number) => void;
 }) {
   const [label, setLabel] = useState(props.option.option);
@@ -22,7 +23,7 @@ export default function OptionComponent(props: {
         value={label}
         onChange={(e) => setLabel(e.target.value)}
       />
-      <button
+      {/* <button
         onClick={(_) => {
           props.updateRadioOptionCB(props.option.id, label, props.id);
         }}
@@ -42,9 +43,12 @@ export default function OptionComponent(props: {
             d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
           />
         </svg>
-      </button>
+      </button> */}
       <button
-        onClick={(_) => props.removeElementCB(props.option.id, props.id)}
+        onClick={(_) => {
+          props.removeElementCB(props.formID, props.id, props.option.id);
+          console.log(props.formID, props.id, props.option.id);
+        }}
         className="px-3 inline text-amber-500 hover:text-amber-600  py-2 rounded-xl font-semibold"
       >
         <svg

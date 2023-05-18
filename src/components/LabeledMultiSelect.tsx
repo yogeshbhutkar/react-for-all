@@ -6,10 +6,11 @@ export default function LabeledMultiSelect(props: {
   id: number;
   label: string;
   value: string;
+  formID: number;
   options: { id: number; option: string }[];
-  removeFieldCB: (id: number) => void;
-  addOptionCB: (id: number, str: string) => void;
-  removeElementCB: (id: number, formID: number) => void;
+  removeFieldCB: (form_pk: number, id: number) => void;
+  addOptionCB: (form_pk: number, id: number, str: string) => void;
+  removeElementCB: (form_pk: number, id: number, optionID: number) => void;
   updateRadioOptionCB: (id: number, option: string, formID: number) => void;
 }) {
   const getAllOptions = useCallback(() => {
@@ -40,7 +41,7 @@ export default function LabeledMultiSelect(props: {
           classNamePrefix="select"
         />
         <button
-          onClick={(_) => props.removeFieldCB(props.id)}
+          onClick={(_) => props.removeFieldCB(props.formID, props.id)}
           className="px-3 inline text-amber-500 hover:text-amber-600  py-2 rounded-xl font-semibold"
         >
           <svg
@@ -62,6 +63,7 @@ export default function LabeledMultiSelect(props: {
       <div>
         {props.options.map((question, index) => (
           <OptionComponent
+            formID={props.formID}
             id={props.id}
             key={index}
             index={index}
@@ -83,7 +85,7 @@ export default function LabeledMultiSelect(props: {
         />
         <button
           onClick={() => {
-            props.addOptionCB(props.id, option);
+            props.addOptionCB(props.formID, props.id, option);
             setOptions((prev) => [...prev, { label: option, value: option }]);
             setOption("");
           }}

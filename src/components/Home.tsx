@@ -1,11 +1,14 @@
 import AllForms from "./AllForms";
 import { getLocalForms } from "../App";
-import { Link, useQueryParams } from "raviger";
+import { useQueryParams } from "raviger";
 import { useState } from "react";
+import Modal from "./common/Modal";
+import CreateForm from "./CreateForm";
 
 export default function Home() {
   const [{ search }, setQuery] = useQueryParams();
   const [searchString, setSearchString] = useState("");
+  const [newForm, setNewForm] = useState(false);
 
   return (
     <div className="flex flex-col justify-center">
@@ -32,13 +35,16 @@ export default function Home() {
         <AllForms getLocalFormCB={getLocalForms} search={search} />
       </div>
       <div className="flex flex-col">
-        <Link
-          href={`/forms/0`}
+        <button
+          onClick={(_) => setNewForm(true)}
           className="bg-amber-500 text-center hover:bg-amber-600 shadow-amber-500/40 mt-4 shadow-lg  text-white px-5 py-2 rounded-xl font-semibold"
         >
           Add Form
-        </Link>
+        </button>
       </div>
+      <Modal open={newForm} closeCB={() => setNewForm(false)}>
+        <CreateForm />
+      </Modal>
     </div>
   );
 }

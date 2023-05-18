@@ -3,12 +3,13 @@ import OptionComponent from "./OptionComponent";
 
 export default function LabeledDropdown(props: {
   id: number;
+  formID: number;
   label: string;
   value: string;
   options: { id: number; option: string }[];
-  removeFieldCB: (id: number) => void;
-  addOptionCB: (id: number, str: string) => void;
-  removeElementCB: (id: number, formID: number) => void;
+  removeFieldCB: (form_pk: number, id: number) => void;
+  addOptionCB: (form_pk: number, id: number, str: string) => void;
+  removeElementCB: (form_pk: number, formID: number, option_ID: number) => void;
   updateRadioOptionCB: (id: number, option: string, formID: number) => void;
 }) {
   const [option, setOption] = useState("");
@@ -36,7 +37,7 @@ export default function LabeledDropdown(props: {
           ))}
         </select>
         <button
-          onClick={(_) => props.removeFieldCB(props.id)}
+          onClick={(_) => props.removeFieldCB(props.formID, props.id)}
           className="px-3 inline text-amber-500 hover:text-amber-600  py-2 rounded-xl font-semibold"
         >
           <svg
@@ -58,6 +59,7 @@ export default function LabeledDropdown(props: {
       <div>
         {props.options.map((question, index) => (
           <OptionComponent
+            formID={props.formID}
             id={props.id}
             key={index}
             index={index}
@@ -79,8 +81,10 @@ export default function LabeledDropdown(props: {
         />
         <button
           onClick={() => {
-            props.addOptionCB(props.id, option);
-            setOption("");
+            if (option !== "") {
+              props.addOptionCB(props.formID, props.id, option);
+              setOption("");
+            }
           }}
           className="px-5 mx-2 bg-amber-500 hover:bg-amber-600 shadow-amber-500/40 my-2 shadow-lg  text-white py-2 rounded-xl font-semibold"
         >

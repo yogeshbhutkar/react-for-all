@@ -5,8 +5,9 @@ export default function LabeledInputs(props: {
   label: string;
   type: string;
   value: string;
+  formId: number;
   updateFormCB: (id: number, str: string) => void;
-  removeFieldCB: (id: number) => void;
+  removeFieldCB: (id: number, form_pk: number) => void;
 }) {
   const [label, setLabel] = useState(props.label);
 
@@ -39,7 +40,7 @@ export default function LabeledInputs(props: {
           </svg>
         </button>
         <button
-          onClick={(_) => props.removeFieldCB(props.id)}
+          onClick={(_) => props.removeFieldCB(props.formId, props.id)}
           className="px-3 text-amber-500 hover:text-amber-600  py-2 rounded-xl font-semibold"
         >
           <svg
