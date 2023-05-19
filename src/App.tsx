@@ -1,36 +1,32 @@
-import AppContainer from "./AppContainer";
-import Header from "./Header";
+import { formData } from "./types/formTypes";
+import AppRouter from "./router/AppRouter";
+import { useEffect, useState } from "react";
+import { me } from "./utils/apiUtils";
+import { User } from "./types/userTypes";
 
-const formFields = [
-  { id: 1, label: "First Name", type: "text" },
-  { id: 2, label: "Last Name", type: "text" },
-  { id: 3, label: "Email", type: "email" },
-  { id: 4, label: "Date of Birth", type: "date" },
-  { id: 5, label: "Phone Number", type: "tel" },
-];
+export const saveLocalForms = (localForms: formData[]) => {
+  localStorage.setItem("savedForms", JSON.stringify(localForms));
+};
+
+export const getLocalForms: () => formData[] = () => {
+  const savedFormsJSON = localStorage.getItem("savedForms");
+  return savedFormsJSON ? JSON.parse(savedFormsJSON) : [];
+};
+
+const getCurrentUser = async (setCurrentUser: (currentUser: User)=>void)=> {
+  const currentUser = await me()
+  setCurrentUser(currentUser)
+}
 
 function App() {
-  return (
-    <AppContainer>
-      <div className="p-4 mx-auto bg-slate-700 shadow-slate-300/30 shadow-lg text-white rounded-xl">
-        <Header
-          title={`welcome to Lesson 5 of $react-typescript with #tailwindcss`}
-        />
-        {formFields.map((field) => (
-          <div key={field.id}>
-            <label>{field.label}</label>
-            <input
-              className="border-2 border-gray-200 rounded-lg p-2 m-2 w-full"
-              type={field.type}
-            />
-          </div>
-        ))}
-        <button className="bg-amber-500 shadow-amber-500/40 mt-4 shadow-lg  text-white px-5 py-2 rounded-xl font-semibold">
-          Submit
-        </button>
-      </div>
-    </AppContainer>
-  );
+
+  const [currentUser, setCurrentUser] = useState<User>({username:"" , url: ""})
+
+  useEffect(()=>{
+    getCurrentUser(setCurrentUser)
+  }, [])
+
+  return <AppRouter currentUser={currentUser} />;
 }
 
 export default App;
