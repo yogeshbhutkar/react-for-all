@@ -2,17 +2,26 @@ import { Redirect, useRoutes } from "raviger";
 import About from "../components/About";
 import AppContainer from "../AppContainer";
 // import Form from "../components/Form";
-import Home from "../components/Home";
+// import Home from "../components/Home";
 import Preview from "../components/Preview";
 import Login from "../components/Login";
 import { User } from "../types/userTypes";
 import Form from "../components/Form";
+import React from "react";
+
+const Home = React.lazy(() => import("../components/Home"));
 
 export default function AppRouter(props: { currentUser: User }) {
   console.log(props.currentUser);
   const routes = {
     "/": () =>
-      props.currentUser.username !== "" ? <Home /> : <Redirect to="/login" />,
+      props.currentUser.username !== "" ? (
+        <React.Suspense fallback={<div>Loading ...</div>}>
+          <Home />
+        </React.Suspense>
+      ) : (
+        <Redirect to="/login" />
+      ),
     "/login": () => <Login />,
     "/about": () =>
       props.currentUser.username !== "" ? <About /> : <Redirect to="/login" />,
