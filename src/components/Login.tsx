@@ -32,6 +32,7 @@ export default function Login() {
       <form className="mx-5" onSubmit={handleSubmit}>
         <label htmlFor="username">Username</label>
         <input
+          autoFocus
           type="text"
           id="username"
           name="username"

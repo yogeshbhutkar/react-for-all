@@ -7,6 +7,13 @@ import { results } from "../types/common";
 import { ClipLoader } from "react-spinners";
 
 export default function Preview(props: { previewId: number }) {
+  const handleKeypress = (e: any) => {
+    //it triggers by pressing the enter key
+    if (e.keyCode === 13) {
+      handleClick();
+    }
+  };
+
   const initializeData = async (
     formId: number,
     setDataCB: React.Dispatch<React.SetStateAction<any>>
@@ -27,6 +34,15 @@ export default function Preview(props: { previewId: number }) {
       ...prev,
       { form_field: questionId, value: ans.toString() },
     ]);
+  };
+
+  const handleClick = () => {
+    navigate("/");
+    console.log(answers[0] + "answers");
+    const temp = async () => {
+      await uploadAnswer(props.previewId, { answers: answers });
+    };
+    temp();
   };
 
   useEffect(() => {
@@ -81,14 +97,9 @@ export default function Preview(props: { previewId: number }) {
             <p className="items-center justify-center m-auto">{message}</p>
           </div>
           <button
-            onClick={(_) => {
-              navigate("/");
-              console.log(answers[0] + "answers");
-              const temp = async () => {
-                await uploadAnswer(props.previewId, { answers: answers });
-              };
-              temp();
-            }}
+            type="submit"
+            onKeyUp={handleKeypress}
+            onClick={handleClick}
             className="bg-amber-500 w-full hover:bg-amber-600 shadow-amber-500/40 mt-6 shadow-lg  text-white px-5 py-2 rounded-xl font-semibold"
           >
             Close

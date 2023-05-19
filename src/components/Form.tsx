@@ -141,6 +141,63 @@ export default function Form(props: { formId: number }) {
 
   const [renderAddForm, setRenderAddForm] = useState<boolean>();
 
+  const addField = () => {
+    setError("");
+
+    if (newField === "") {
+      setError("Label cannot be empty.");
+      return;
+    }
+
+    console.log(type);
+
+    const payload = {
+      id: Number(new Date()),
+      label: newField,
+      kind:
+        type === "tel" ||
+        type === "email" ||
+        type === "number" ||
+        type === "date"
+          ? "TEXT"
+          : type,
+      options: [],
+      value: newField,
+      meta: { type: type },
+    };
+
+    // const temp = async () => await postFormFields(props.formId, payload )
+    // temp()
+
+    postFormFields(props.formId, payload).then((response) => {
+      setNewField("");
+      setData((prev) => [...prev, payload]);
+
+      const tempMethod = async () =>
+        await initializeData(props.formId, setData);
+      tempMethod();
+      console.log(response);
+    });
+  };
+
+  const handleKeypress = (e: any) => {
+    //it triggers by pressing the enter key
+    if (e.keyCode === 13) {
+      updateTitleAndDesc(props.formId);
+      setUpdatedMessage("Updated");
+      setTimeout(() => {
+        setUpdatedMessage("");
+      }, 1000);
+    }
+  };
+
+  const handleAddField = (e: any) => {
+    //it triggers by pressing the enter key
+    if (e.keyCode === 13) {
+      addField();
+    }
+  };
+
   const updateTitleAndDesc = async (id: number) => {
     const payload = {
       title: title,
@@ -148,6 +205,8 @@ export default function Form(props: { formId: number }) {
     };
     await updateForm(id, payload);
   };
+
+  const [updatedMessage, setUpdatedMessage] = useState<string>("");
 
   useEffect(() => {
     if (props.formId === -1) {
@@ -172,10 +231,13 @@ export default function Form(props: { formId: number }) {
       ) : (
         <div className="flex flex-col gap-2 p-4 ">
           <div>
-            <label htmlFor="title">Title</label>
+            <label className="inline" htmlFor="title">
+              Title
+            </label>
+
             <button
               onClick={(_) => updateTitleAndDesc(props.formId)}
-              className="px-3  text-amber-500 hover:text-amber-600  my-2 rounded-xl font-semibold"
+              className="px-3 inline text-amber-500 hover:text-amber-600  my-2 rounded-xl font-semibold"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -192,7 +254,13 @@ export default function Form(props: { formId: number }) {
                 />
               </svg>
             </button>
+            {updatedMessage && (
+              <p className="bg-[#5d7691] px-3 py-2 rounded-lg inline-block text-center items-center ">
+                {updatedMessage}
+              </p>
+            )}
             <input
+              onKeyUp={handleKeypress}
               type="text"
               id="title"
               name="title"
@@ -225,6 +293,7 @@ export default function Form(props: { formId: number }) {
               </svg>
             </button>
             <input
+              onKeyUp={handleKeypress}
               type="text"
               id="description"
               name="description"
@@ -338,6 +407,7 @@ export default function Form(props: { formId: number }) {
           </div>
           <div className="flex gap-2 p-2">
             <input
+              onKeyUp={handleAddField}
               type="text"
               className="border-1 focus:outline-none text-white border-slate-600 w-full bg-[#485d74] rounded-lg p-2 my-2 flex-1"
               value={newField}
@@ -408,44 +478,7 @@ export default function Form(props: { formId: number }) {
               </option>
             </select>
             <button
-              onClick={(_) => {
-                setError("");
-
-                if (newField === "") {
-                  setError("Label cannot be empty.");
-                  return;
-                }
-
-                console.log(type);
-
-                const payload = {
-                  id: Number(new Date()),
-                  label: newField,
-                  kind:
-                    type === "tel" ||
-                    type === "email" ||
-                    type === "number" ||
-                    type === "date"
-                      ? "TEXT"
-                      : type,
-                  options: [],
-                  value: newField,
-                  meta: { type: type },
-                };
-
-                // const temp = async () => await postFormFields(props.formId, payload )
-                // temp()
-
-                postFormFields(props.formId, payload).then((response) => {
-                  setNewField("");
-                  setData((prev) => [...prev, payload]);
-
-                  const tempMethod = async () =>
-                    await initializeData(props.formId, setData);
-                  tempMethod();
-                  console.log(response);
-                });
-              }}
+              onClick={addField}
               className="px-5 bg-amber-500 hover:bg-amber-600 shadow-amber-500/40 my-2 shadow-lg  text-white py-2 rounded-xl font-semibold"
             >
               Add Field

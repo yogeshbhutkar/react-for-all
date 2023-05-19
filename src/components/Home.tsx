@@ -1,11 +1,44 @@
 import AllForms from "./AllForms";
 import { getLocalForms } from "../App";
-import { useQueryParams } from "raviger";
-import { useState } from "react";
+import { navigate, useQueryParams } from "raviger";
+import { useCallback, useEffect, useState } from "react";
 import Modal from "./common/Modal";
 import CreateForm from "./CreateForm";
 
 export default function Home() {
+  // handle what happens on key press
+  const handleKeyPress = useCallback((event: any) => {
+    if (event.shiftKey === true) {
+      if (event.key === "K") {
+        console.log("New Form");
+        setNewForm(true);
+      }
+      if (event.key === "A") {
+        console.log("navigating to about");
+        navigate("/about");
+      }
+      if (event.key === "L") {
+        console.log("Logging out");
+        localStorage.removeItem("token");
+        window.location.reload();
+      }
+      if (event.key === "S") {
+        document.getElementById("search")?.focus();
+        setSearchString("");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    // attach the event listener
+    document.addEventListener("keydown", handleKeyPress);
+
+    // remove the event listener
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [handleKeyPress]);
+
   const [{ search }, setQuery] = useQueryParams();
   const [searchString, setSearchString] = useState("");
   const [newForm, setNewForm] = useState(false);

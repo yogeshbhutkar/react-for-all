@@ -22,12 +22,9 @@ export default function AppRouter(props: { currentUser: User }) {
       ) : (
         <Redirect to="/login" />
       ),
-    "/preview/:id": ({ id }: { id: string }) =>
-      props.currentUser.username !== "" ? (
-        <Preview previewId={Number(id)} />
-      ) : (
-        <Redirect to="/login" />
-      ),
+    "/preview/:id": ({ id }: { id: string }) => (
+      <Preview previewId={Number(id)} />
+    ),
   };
   let routeResult = useRoutes(routes);
   return (

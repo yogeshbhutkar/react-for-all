@@ -42,6 +42,7 @@ export default function QuestionCard(props: {
         if (props.type === "textarea") {
           return (
             <textarea
+              autoFocus
               name="answer"
               id="answer"
               className="border-1 focus:outline-none text-white border-slate-600 w-full bg-[#485d74] rounded-lg p-2 my-2 flex-1"
@@ -56,6 +57,7 @@ export default function QuestionCard(props: {
                 <div key={index} className="mr-5 my-5 inline-block">
                   <label className="mr-2 py-2">{option.option}</label>
                   <input
+                    autoFocus
                     className="bg-slate-500 text-white font-semibold"
                     key={index}
                     value={option.option}
@@ -70,6 +72,7 @@ export default function QuestionCard(props: {
         } else if (props.type === "multiple") {
           return (
             <Select
+              autoFocus
               isMulti
               name="options"
               options={options}
@@ -85,6 +88,7 @@ export default function QuestionCard(props: {
             <input
               name="answer"
               id="answer"
+              autoFocus
               className="border-1 focus:outline-none text-white border-slate-600 w-full bg-[#485d74] rounded-lg p-2 my-2 flex-1"
               value={ansState}
               onChange={(e) => setAnsState(e.target.value)}
