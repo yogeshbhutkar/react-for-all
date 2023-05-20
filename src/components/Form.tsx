@@ -15,6 +15,7 @@ import {
 } from "../utils/apiUtils";
 import { inputStyle } from "../constants";
 import { resultKind, results } from "../types/common";
+import { keyboardKey } from "@testing-library/user-event";
 
 const initializeData = async (
   formId: number,
@@ -187,7 +188,7 @@ export default function Form(props: { formId: number }) {
     });
   };
 
-  const handleKeypress = (e: any) => {
+  const handleKeypress = (e: keyboardKey) => {
     //it triggers by pressing the enter key
     if (e.keyCode === 13) {
       updateTitleAndDesc(props.formId);
@@ -198,7 +199,7 @@ export default function Form(props: { formId: number }) {
     }
   };
 
-  const handleAddField = (e: any) => {
+  const handleAddField = (e: keyboardKey) => {
     //it triggers by pressing the enter key
     if (e.keyCode === 13) {
       addField();

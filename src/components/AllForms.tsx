@@ -6,7 +6,12 @@ import { Pagination } from "../types/common";
 import { initialOffset, limit } from "../constants";
 import PageElement from "./PageElement";
 import ShareForm from "./common/ShareForm";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  OnDragEndResponder,
+} from "react-beautiful-dnd";
 
 const fetchForms = async (
   setAllFormsCB: (value: Form[]) => void,

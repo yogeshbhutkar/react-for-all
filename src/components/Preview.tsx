@@ -5,9 +5,10 @@ import { getFormData, uploadAnswer } from "../utils/apiUtils";
 
 import { results } from "../types/common";
 import { ClipLoader } from "react-spinners";
+import { keyboardKey } from "@testing-library/user-event";
 
 export default function Preview(props: { previewId: number }) {
-  const handleKeypress = (e: any) => {
+  const handleKeypress = (e: keyboardKey) => {
     //it triggers by pressing the enter key
     if (e.keyCode === 13) {
       handleClick();
@@ -16,7 +17,7 @@ export default function Preview(props: { previewId: number }) {
 
   const initializeData = async (
     formId: number,
-    setDataCB: React.Dispatch<React.SetStateAction<any>>
+    setDataCB: React.Dispatch<React.SetStateAction<results[]>>
   ) => {
     try {
       getFormData(formId).then((result) => setDataCB(result.results));
