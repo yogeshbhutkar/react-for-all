@@ -9,7 +9,7 @@ import { ClipLoader } from "react-spinners";
 export default function Preview(props: { previewId: number }) {
   const initializeData = async (
     formId: number,
-    setDataCB: React.Dispatch<React.SetStateAction<any>>
+    setDataCB: React.Dispatch<React.SetStateAction<results[]>>
   ) => {
     try {
       getFormData(formId).then((result) => setDataCB(result.results));
