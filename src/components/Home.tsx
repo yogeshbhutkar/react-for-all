@@ -7,7 +7,7 @@ import CreateForm from "./CreateForm";
 
 export default function Home() {
   // handle what happens on key press
-  const handleKeyPress = useCallback((event: any) => {
+  const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if (event.shiftKey === true) {
       if (event.key === "K") {
         console.log("New Form");
