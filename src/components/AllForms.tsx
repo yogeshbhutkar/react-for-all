@@ -6,7 +6,12 @@ import { Pagination } from "../types/common";
 import { initialOffset, limit } from "../constants";
 import PageElement from "./PageElement";
 import ShareForm from "./common/ShareForm";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  OnDragEndResponder,
+} from "react-beautiful-dnd";
 
 const fetchForms = async (
   setAllFormsCB: (value: Form[]) => void,
@@ -48,7 +53,15 @@ export default function AllForms(props: {
     fetchForms(setAllForms, offset, setCount);
   }, [offset]);
 
-  const handleDragEnd = (result: any) => {
+  const handleDragEnd = (result: {
+    draggableId: string;
+    type: string;
+    source: { index: number; droppableId: string };
+    reason: string;
+    mode: string;
+    destination: { droppableId: string; index: number };
+  }) => {
+    console.log(result);
     if (!result.destination) return;
     const items = Array.from(allForms);
     const [reorderData] = items.splice(result.source.index, 1);
@@ -58,7 +71,7 @@ export default function AllForms(props: {
 
   return (
     <div className="px-5 w-full ">
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <DragDropContext onDragEnd={handleDragEnd as OnDragEndResponder}>
         <Droppable droppableId="list">
           {(provided) => (
             <div

@@ -15,14 +15,22 @@ import {
 } from "../utils/apiUtils";
 import { inputStyle } from "../constants";
 import { resultKind, results } from "../types/common";
+import { keyboardKey } from "@testing-library/user-event";
 
 const initializeData = async (
   formId: number,
-  setDataCB: React.Dispatch<React.SetStateAction<any>>
+  setDataCB: React.Dispatch<React.SetStateAction<results[]>>
 ) => {
   try {
-    const response = await getFormData(formId);
-    const resData = response.results.sort(function (a: any, b: any) {
+    const response: {
+      count: number;
+      next: string;
+      previous: string;
+      results: results[];
+    } = await getFormData(formId);
+    console.log(response.results + "response from form");
+    const resData = response.results.sort(function (a: results, b: results) {
+      console.log(a, b + "a and b value");
       return a.id - b.id;
     });
     setDataCB(resData);
@@ -180,7 +188,7 @@ export default function Form(props: { formId: number }) {
     });
   };
 
-  const handleKeypress = (e: any) => {
+  const handleKeypress = (e: keyboardKey) => {
     //it triggers by pressing the enter key
     if (e.keyCode === 13) {
       updateTitleAndDesc(props.formId);
@@ -191,7 +199,7 @@ export default function Form(props: { formId: number }) {
     }
   };
 
-  const handleAddField = (e: any) => {
+  const handleAddField = (e: keyboardKey) => {
     //it triggers by pressing the enter key
     if (e.keyCode === 13) {
       addField();
