@@ -18,11 +18,18 @@ import { resultKind, results } from "../types/common";
 
 const initializeData = async (
   formId: number,
-  setDataCB: React.Dispatch<React.SetStateAction<any>>
+  setDataCB: React.Dispatch<React.SetStateAction<results[]>>
 ) => {
   try {
-    const response = await getFormData(formId);
-    const resData = response.results.sort(function (a: any, b: any) {
+    const response: {
+      count: number;
+      next: string;
+      previous: string;
+      results: results[];
+    } = await getFormData(formId);
+    console.log(response.results + "response from form");
+    const resData = response.results.sort(function (a: results, b: results) {
+      console.log(a, b + "a and b value");
       return a.id - b.id;
     });
     setDataCB(resData);

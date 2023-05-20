@@ -48,7 +48,14 @@ export default function AllForms(props: {
     fetchForms(setAllForms, offset, setCount);
   }, [offset]);
 
-  const handleDragEnd = (result: any) => {
+  const handleDragEnd = (result: {
+    draggableId: string;
+    type: string;
+    source: { index: number; droppableId: string };
+    reason: string;
+    mode: string;
+    destination: { droppableId: string; index: number };
+  }) => {
     if (!result.destination) return;
     const items = Array.from(allForms);
     const [reorderData] = items.splice(result.source.index, 1);
@@ -58,7 +65,7 @@ export default function AllForms(props: {
 
   return (
     <div className="px-5 w-full ">
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <DragDropContext onDragEnd={handleDragEnd as OnDragEndResponder}>
         <Droppable droppableId="list">
           {(provided) => (
             <div
