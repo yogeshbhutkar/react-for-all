@@ -6,13 +6,13 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const data = await login(username, password);
-      localStorage.setItem("token", data.token);
-      window.location.href = "/";
-      // navigate("/")
+      login(username, password).then((res) => {
+        localStorage.setItem("token", res.token);
+        window.location.href = "/";
+      });
     } catch (error) {
       console.log(error);
     }
